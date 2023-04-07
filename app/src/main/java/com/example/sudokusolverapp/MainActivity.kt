@@ -2,6 +2,10 @@ package com.example.sudokusolverapp
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.*
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.RectShape
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -65,7 +69,7 @@ class MainActivity : AppCompatActivity() {
                 .build()
                 .also {
                     it.setAnalyzer(cameraExecutor, LuminosityAnalyzer { luma ->
-                        Log.d(TAG, "Average luminosity: $luma")
+                        runOnUiThread(){displaySudokuLocator(luma.toInt(),200,100,200)}
                     })
                 }
 
@@ -121,6 +125,24 @@ class MainActivity : AppCompatActivity() {
                 finish()
             }
         }
+    }
+
+    private fun displaySudokuLocator(left: Int, right: Int, top: Int, bottom: Int){
+        val bitmap: Bitmap = Bitmap.createBitmap(viewBinding.sudokuLocator.width, viewBinding.sudokuLocator.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+
+        //Log.d(TAG, "left: $left, right: $right, top: $top, bottom: $bottom")
+
+        // draw rectangle shape to canvas
+        val shapeDrawable = ShapeDrawable(RectShape())
+        shapeDrawable.setBounds( left, top, right, bottom)
+        shapeDrawable.paint.color = Color.parseColor("#009944")
+        shapeDrawable.paint.style = Paint.Style.STROKE
+        shapeDrawable.paint.strokeWidth = 4F
+        shapeDrawable.draw(canvas)
+
+        // set bitmap as background to ImageView
+        viewBinding.sudokuLocator.background = BitmapDrawable(resources, bitmap)
     }
 
 }
